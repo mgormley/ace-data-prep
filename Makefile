@@ -9,12 +9,34 @@ JAVACS = export CLASSPATH=`mvn -f ./scripts/maven/pom-cs.xml exec:exec -q -Dexec
 PYTHON = python
 JAVAFLAGS = -ea
 
-LDC_DIR=./LDC
-CORPORA_DIR=./corpora
 CONCRETE_CHUNKLINK=./concrete-chunklink
 
+# Machine specific parameters.
+ifeq ($(MACHINE),COE)
+LDC_DIR=/export/common/data/corpora/LDC
+OUT_DIR=~/corpora/processed
+JAVAFLAGS = -ea -Xmx10000m -XX:-UseParallelGC -XX:-UseParNewGC -XX:+UseSerialGC
+#
+elifeq ($(MACHINE),LOCAL)
+LDC_DIR=~/research/LDC
+OUT_DIR=~/research/corpora/processed
+JAVAFLAGS = -ea
+#
+else
+JAVAFLAGS = -ea
+# Error if LDC_DIR and OUT_DIR weren't defined on the command line.
+ifndef LDC_DIR
+$(error The variable LDC_DIR should be defined on the command line)
+endif
+ifndef OUT_DIR
+$(error The variable OUT_DIR should be defined on the command line)
+endif
+#
+endif
+
+
 # ACE 2005 variables.
-ACE_OUT_DIR=$(CORPORA_DIR)/processed/ace_05_concrete4.5
+ACE_OUT_DIR=$(OUT_DIR)/ace_05_concrete4.5
 ACE05_DOMAINS=./data/ace2005_domains
 LDC2006T06=$(LDC_DIR)/LDC2006T06
 LDC2006T06_EN=$(LDC_DIR)/LDC2006T06/data/English
@@ -26,8 +48,8 @@ ACE05_SPLITS=$(ACE_OUT_DIR)/ace-05-splits
 APF_XML_FILES =$(notdir $(wildcard $(LDC2006T06_EN)/*/adj/*.apf.xml)) 
 
 # SemEval-2010 Task 8 variables.
-SE_OUT_DIR=$(CORPORA_DIR)/processed/semeval_concrete4.5/
-SE_COMMS=$(CORPORA_DIR)/processed/semeval_concrete4.4/comms
+SE_OUT_DIR=$(OUT_DIR)/semeval_concrete4.5/
+SE_COMMS=$(OUT_DIR)/semeval_concrete4.4/comms
 SE_ANNO=$(SE_OUT_DIR)/comms-anno
 SE_CHUNK=$(SE_OUT_DIR)/comms-anno-chunks
 
