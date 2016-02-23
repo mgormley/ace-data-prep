@@ -1,0 +1,13 @@
+*.pyc
+*~
+.#*
+\#*\#
+.svn
+
+# /
+/target
+/.project
+/.pydevproject
+/.settings
+/.classpath
+/java.hprof.txt
