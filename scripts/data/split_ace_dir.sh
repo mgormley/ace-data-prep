@@ -20,6 +20,8 @@ mkdir -p $OUT_DIR
 # Domains: bc  bn  cts nw  un  wl
 for FILESET in bn nw bc cts un wl
 do
+    # Find the adjudicated files for the given domain, strips the .sgm
+    # suffix and the directory prefix.
     find $ACE_EN_DIR -name "*.sgm" | grep "/$FILESET/adj/" | sed -e "s/.sgm$//" | sed 's|^.*/||g' > $OUT_DIR/$FILESET.files
 done
 
@@ -43,7 +45,8 @@ do
     mkdir -p $DOMDIR
     rm -r $DOMDIR
     mkdir -p $DOMDIR
-    # Prepends the COMMS_DIR and appends .comm. Then copies each file in to the DOMDIR.
+    # Prepends the COMMS_DIR and appends .comm. Then copies each file
+    # in to the DOMDIR.
     cat $FILELIST | awk "\$0=\"${COMMS_DIR}/\"\$0\".comm\"" | xargs -n 1 -I % cp % $DOMDIR/
     ls $DOMDIR | wc -l
 done

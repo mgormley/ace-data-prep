@@ -64,7 +64,7 @@ anno: ace05splits semevalanno
 $(CONCRETE_CHUNKLINK):
 	pip install 'concrete>=4.4.0,<4.8.0'
 	git clone https://github.com/mgormley/concrete-chunklink.git $(CONCRETE_CHUNKLINK)
-	cd $(CONCRETE_CHUNKLINK) && git checkout v0.1
+	cd $(CONCRETE_CHUNKLINK) && git checkout v0.2
 
 # ----------------------------------------------------------------
 # SemEval-2010 Task 8 Data

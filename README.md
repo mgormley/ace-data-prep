@@ -10,6 +10,7 @@ chunklink.pl script from CoNLL-2000.
 - Java 1.8+
 - Maven 3.4+
 - Python 2.7.x
+- Perl 5.x
 - GNU Make
 
 # Convert ACE 2005 Data to Concrete
