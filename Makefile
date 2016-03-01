@@ -215,16 +215,19 @@ ace05splits: $(LDC2006T06) ace05anno ace05txt-ng14 ace05txt-pm13 ace05txt-ygd15-
 
 # Count the number of training instances and relation labels.
 .PHONY: ace05counts
-ace05counts: ace05splits
+ace05counts: #ace05splits
 	cat $(ACE05_SPLITS)/txts-ng14/bn+nw/*.txt | grep relLabels: | wc -l
 	cat $(ACE05_SPLITS)/txts-ng14/bn+nw/*.txt | grep relLabels: | sort | uniq | wc -l
+	cat $(ACE05_SPLITS)/txts-ng14/bn+nw/*.txt | grep nePairs: | perl -pe "s/, Fancy/\nFancy/g" | perl -pe "s/.*entityType=(\S+), entitySubType=(\S+),.*/\1 \2/g" | sort | uniq | wc -l
 	cat $(ACE05_SPLITS)/txts-pm13/bn+nw/*.txt | grep relLabels: | wc -l
 	cat $(ACE05_SPLITS)/txts-pm13/bn+nw/*.txt | grep relLabels: | sort | uniq | wc -l
+	cat $(ACE05_SPLITS)/txts-pm13/bn+nw/*.txt | grep nePairs: | perl -pe "s/, Fancy/\nFancy/g" | perl -pe "s/.*entityType=(\S+), entitySubType=(\S+),.*/\1 \2/g" | sort | uniq | wc -l
 	cat $(ACE05_SPLITS)/txts-ygd15-r11/bn+nw/*.txt | grep relLabels: | wc -l
 	cat $(ACE05_SPLITS)/txts-ygd15-r11/bn+nw/*.txt | grep relLabels: | sort | uniq | wc -l
+	cat $(ACE05_SPLITS)/txts-ygd15-r11/bn+nw/*.txt | grep nePairs: | perl -pe "s/, Fancy/\nFancy/g" | perl -pe "s/.*entityType=(\S+), entitySubType=(\S+),.*/\1 \2/g" | sort | uniq | wc -l
 	cat $(ACE05_SPLITS)/txts-ygd15-r32/bn+nw/*.txt | grep relLabels: | wc -l
 	cat $(ACE05_SPLITS)/txts-ygd15-r32/bn+nw/*.txt | grep relLabels: | sort | uniq | wc -l
-
+	cat $(ACE05_SPLITS)/txts-ygd15-r32/bn+nw/*.txt | grep nePairs: | perl -pe "s/, Fancy/\nFancy/g" | perl -pe "s/.*entityType=(\S+), entitySubType=(\S+),.*/\1 \2/g" | sort | uniq | wc -l
 # Don't delete intermediate files.
 .SECONDARY:
 
