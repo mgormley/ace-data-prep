@@ -15,11 +15,11 @@ CONCRETE_CHUNKLINK=./concrete-chunklink
 # Machine specific parameters.
 ifeq ($(MACHINE),COE)
 LDC_DIR=/export/common/data/corpora/LDC
-OUT_DIR=~/corpora/processed/ace_05_concrete4.5
+OUT_DIR=~/corpora/processed/ace_05_concrete4.3
 JAVAFLAGS = -ea -Xmx10000m -XX:-UseParallelGC -XX:-UseParNewGC -XX:+UseSerialGC
 else ifeq ($(MACHINE),LOCAL)
 LDC_DIR=/Users/mgormley/research/LDC
-OUT_DIR=/Users/mgormley/research/corpora/processed/ace_05_concrete4.5
+OUT_DIR=/Users/mgormley/research/corpora/processed/ace_05_concrete4.3
 JAVAFLAGS = -ea
 else
 JAVAFLAGS = -ea
@@ -120,7 +120,7 @@ $(ACE05_ANNO)/%.comm : $(ACE05_COMMS)/%.comm
 	$(JAVACS) $(JAVAFLAGS) edu.jhu.hlt.concrete.stanford.AnnotateTokenizedConcrete $< $@
 
 # Converts the parses from concrete-stanford to chunks with concrete-chunklink.
-$(ACE05_CHUNK)/%.comm : $(ACE05_ANNO)/%.comm #$(CONCRETE_CHUNKLINK)
+$(ACE05_CHUNK)/%.comm : $(ACE05_ANNO)/%.comm $(CONCRETE_CHUNKLINK)
 	mkdir -p $(ACE05_CHUNK)
 	$(PYTHON) $(CONCRETE_CHUNKLINK)/concrete_chunklink/add_chunks.py --chunklink $(CONCRETE_CHUNKLINK)/scripts/chunklink_2-2-2000_for_conll.pl $< $@
 
@@ -212,6 +212,18 @@ ace05splits: $(LDC2006T06) ace05anno ace05txt-ng14 ace05txt-pm13 ace05txt-ygd15-
 	bash ./scripts/data/split_ace_dir.sh $(LDC2006T06) $(ACE05_TXT_PM13) $(ACE05_SPLITS)/txts-pm13 txt
 	bash ./scripts/data/split_ace_dir.sh $(LDC2006T06) $(ACE05_TXT_YGD15_R11) $(ACE05_SPLITS)/txts-ygd15-r11 txt
 	bash ./scripts/data/split_ace_dir.sh $(LDC2006T06) $(ACE05_TXT_YGD15_R32) $(ACE05_SPLITS)/txts-ygd15-r32 txt
+
+# Count the number of training instances and relation labels.
+.PHONY: ace05counts
+ace05counts: ace05splits
+	cat $(ACE05_SPLITS)/txts-ng14/bn+nw/*.txt | grep relLabels: | wc -l
+	cat $(ACE05_SPLITS)/txts-ng14/bn+nw/*.txt | grep relLabels: | sort | uniq | wc -l
+	cat $(ACE05_SPLITS)/txts-pm13/bn+nw/*.txt | grep relLabels: | wc -l
+	cat $(ACE05_SPLITS)/txts-pm13/bn+nw/*.txt | grep relLabels: | sort | uniq | wc -l
+	cat $(ACE05_SPLITS)/txts-ygd15-r11/bn+nw/*.txt | grep relLabels: | wc -l
+	cat $(ACE05_SPLITS)/txts-ygd15-r11/bn+nw/*.txt | grep relLabels: | sort | uniq | wc -l
+	cat $(ACE05_SPLITS)/txts-ygd15-r32/bn+nw/*.txt | grep relLabels: | wc -l
+	cat $(ACE05_SPLITS)/txts-ygd15-r32/bn+nw/*.txt | grep relLabels: | sort | uniq | wc -l
 
 # Don't delete intermediate files.
 .SECONDARY:
