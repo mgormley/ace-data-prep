@@ -12,6 +12,7 @@ set -u # Fail if variables are not set.
 ACE_DIR=$1 # The ACE LDC directory. ~/research/corpora/LDC/LDC2006T06
 COMMS_DIR=$2 # The directory to split: e.g. ~/research/corpora/processed/ace_05_concrete4.3
 OUT_DIR=$3 # The output directory. e.g. ./tmp/
+SUFFIX=$4 # The suffix of the input files.
 
 ACE_EN_DIR=$ACE_DIR/data/English
 
@@ -29,8 +30,9 @@ done
 cat $OUT_DIR/bn.files $OUT_DIR/nw.files > $OUT_DIR/bn+nw.files
 
 # Plank & Moschitti (2013) dev/test split:
-cp ./config/pm13_folds/bc0.files $OUT_DIR/bc_dev.files
-cp ./config/pm13_folds/bc1.files $OUT_DIR/bc_test.files
+comm -1 -2 ./config/pm13_folds/bc0.files $OUT_DIR/bc.files > $OUT_DIR/bc_dev.files
+comm -1 -2 ./config/pm13_folds/bc1.files $OUT_DIR/bc.files > $OUT_DIR/bc_test.files
+
 
 # Everything except bc_test.
 cat $OUT_DIR/{bc_dev,bn,cts,nw,un,wl}.files > $OUT_DIR/all_nobctest.files
@@ -45,9 +47,9 @@ do
     mkdir -p $DOMDIR
     rm -r $DOMDIR
     mkdir -p $DOMDIR
-    # Prepends the COMMS_DIR and appends .comm. Then copies each file
+    # Prepends the COMMS_DIR and appends ${SUFFIX}. Then copies each file
     # in to the DOMDIR.
-    cat $FILELIST | awk "\$0=\"${COMMS_DIR}/\"\$0\".comm\"" | xargs -n 1 -I % cp % $DOMDIR/
+    cat $FILELIST | awk "\$0=\"${COMMS_DIR}/\"\$0\".${SUFFIX}\"" | xargs -n 1 -I % cp % $DOMDIR/
     ls $DOMDIR | wc -l
 done
 

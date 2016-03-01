@@ -6,6 +6,7 @@
 SHELL = /bin/bash
 JAVAIN = export CLASSPATH=`mvn -f ./scripts/maven/pom-acere.xml exec:exec -q -Dexec.executable="echo" -Dexec.args="%classpath"` && java
 JAVACS = export CLASSPATH=`mvn -f ./scripts/maven/pom-cs.xml exec:exec -q -Dexec.executable="echo" -Dexec.args="%classpath"` && java
+JAVAPA = java -cp /Users/mgormley/research/easy-pacaya/deps/pacaya-nlp/target/pacaya-nlp-3.1.2-SNAPSHOT-jar-with-dependencies.jar
 PYTHON = python
 JAVAFLAGS = -ea
 
@@ -14,11 +15,11 @@ CONCRETE_CHUNKLINK=./concrete-chunklink
 # Machine specific parameters.
 ifeq ($(MACHINE),COE)
 LDC_DIR=/export/common/data/corpora/LDC
-OUT_DIR=~/corpora/processed
+OUT_DIR=~/corpora/processed/ace_05_concrete4.5
 JAVAFLAGS = -ea -Xmx10000m -XX:-UseParallelGC -XX:-UseParNewGC -XX:+UseSerialGC
 else ifeq ($(MACHINE),LOCAL)
 LDC_DIR=~/research/LDC
-OUT_DIR=~/research/corpora/processed
+OUT_DIR=~/research/corpora/processed/ace_05_concrete4.5
 JAVAFLAGS = -ea
 else
 JAVAFLAGS = -ea
@@ -34,13 +35,14 @@ endif
 endif
 
 # ACE 2005 variables.
-ACE_OUT_DIR=$(abspath $(OUT_DIR))/ace_05_concrete4.5
+ACE_OUT_DIR=$(abspath $(OUT_DIR))
 LDC2006T06=$(abspath $(LDC_DIR))/LDC2006T06
 LDC2006T06_EN=$(abspath $(LDC_DIR))/LDC2006T06/data/English
 LDC2006T06_EN_SYM=$(ACE_OUT_DIR)/LDC2006T06_temp_copy
 ACE05_COMMS=$(ACE_OUT_DIR)/ace-05-comms
 ACE05_ANNO=$(ACE_OUT_DIR)/ace-05-comms-ptb-anno
 ACE05_CHUNK=$(ACE_OUT_DIR)/ace-05-comms-ptb-anno-chunks
+ACE05_TXT=$(ACE_OUT_DIR)/ace-05-comms-ptb-anno-chunks-txt
 ACE05_SPLITS=$(ACE_OUT_DIR)/ace-05-splits
 APF_XML_FILES =$(notdir $(wildcard $(LDC2006T06_EN)/*/adj/*.apf.xml)) 
 
@@ -119,6 +121,17 @@ $(ACE05_CHUNK)/%.comm : $(ACE05_ANNO)/%.comm $(CONCRETE_CHUNKLINK)
 	mkdir -p $(ACE05_CHUNK)
 	$(PYTHON) $(CONCRETE_CHUNKLINK)/concrete_chunklink/add_chunks.py --chunklink $(CONCRETE_CHUNKLINK)/scripts/chunklink_2-2-2000_for_conll.pl $< $@
 
+$(ACE05_TXT)/%.txt : $(ACE05_CHUNK)/%.comm
+	mkdir -p $(ACE05_TXT)
+	$(JAVAPA) $(JAVAFLAGS) edu.jhu.nlp.data.simple.CorpusConverter \
+		--train $< \
+		--trainGoldOut $@ \
+		--trainType CONCRETE \
+		--trainTypeOut SIMPLE_TEXT \
+		--makeRelSingletons true \
+		--shuffle false \
+		--mungeRelations true
+
 # Converts all the ACE 2005 data to Concrete Communications.
 .PHONY: ace05comms
 ace05comms: $(addprefix $(ACE05_COMMS)/,$(subst .apf.xml,.comm,$(APF_XML_FILES)))
@@ -127,10 +140,14 @@ ace05comms: $(addprefix $(ACE05_COMMS)/,$(subst .apf.xml,.comm,$(APF_XML_FILES))
 .PHONY: ace05anno
 ace05anno: $(addprefix $(ACE05_CHUNK)/,$(subst .apf.xml,.comm,$(APF_XML_FILES)))
 
+.PHONY: ace05txt
+ace05txt: $(addprefix $(ACE05_TXT)/,$(subst .apf.xml,.txt,$(APF_XML_FILES)))
+
 # Split the annotated ACE Concrete files into domains.
 .PHONY: ace05splits
-ace05splits: $(LDC2006T06) ace05anno
-	bash ./scripts/data/split_ace_dir.sh $(LDC2006T06) $(ACE05_CHUNK) $(ACE05_SPLITS)
+ace05splits: $(LDC2006T06) ace05anno ace05txt
+	bash ./scripts/data/split_ace_dir.sh $(LDC2006T06) $(ACE05_CHUNK) $(ACE05_SPLITS)/comms comm
+	bash ./scripts/data/split_ace_dir.sh $(LDC2006T06) $(ACE05_TXT) $(ACE05_SPLITS)/txts txt
 
 # Don't delete intermediate files.
 .SECONDARY:
