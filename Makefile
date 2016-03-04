@@ -42,10 +42,10 @@ LDC2006T06_EN_SYM=$(ACE_OUT_DIR)/LDC2006T06_temp_copy
 ACE05_COMMS=$(ACE_OUT_DIR)/ace-05-comms
 ACE05_ANNO=$(ACE_OUT_DIR)/ace-05-comms-ptb-anno
 ACE05_CHUNK=$(ACE_OUT_DIR)/ace-05-comms-ptb-anno-chunks
-ACE05_TXT_NG14=$(ACE_OUT_DIR)/ace-05-comms-ptb-anno-chunks-txt-ng14
-ACE05_TXT_PM13=$(ACE_OUT_DIR)/ace-05-comms-ptb-anno-chunks-txt-pm13
-ACE05_TXT_YGD15_R11=$(ACE_OUT_DIR)/ace-05-comms-ptb-anno-chunks-txt-ygd15-r11
-ACE05_TXT_YGD15_R32=$(ACE_OUT_DIR)/ace-05-comms-ptb-anno-chunks-txt-ygd15-r32
+ACE05_JSON_NG14=$(ACE_OUT_DIR)/ace-05-comms-ptb-anno-chunks-json-ng14
+ACE05_JSON_PM13=$(ACE_OUT_DIR)/ace-05-comms-ptb-anno-chunks-json-pm13
+ACE05_JSON_YGD15_R11=$(ACE_OUT_DIR)/ace-05-comms-ptb-anno-chunks-json-ygd15-r11
+ACE05_JSON_YGD15_R32=$(ACE_OUT_DIR)/ace-05-comms-ptb-anno-chunks-json-ygd15-r32
 ACE05_SPLITS=$(ACE_OUT_DIR)/ace-05-splits
 APF_XML_FILES =$(notdir $(wildcard $(LDC2006T06_EN)/*/adj/*.apf.xml)) 
 
@@ -124,13 +124,13 @@ $(ACE05_CHUNK)/%.comm : $(ACE05_ANNO)/%.comm $(CONCRETE_CHUNKLINK)
 	mkdir -p $(ACE05_CHUNK)
 	$(PYTHON) $(CONCRETE_CHUNKLINK)/concrete_chunklink/add_chunks.py --chunklink $(CONCRETE_CHUNKLINK)/scripts/chunklink_2-2-2000_for_conll.pl $< $@
 
-$(ACE05_TXT_NG14)/%.txt : $(ACE05_CHUNK)/%.comm
-	mkdir -p $(ACE05_TXT_NG14)
+$(ACE05_JSON_NG14)/%.json : $(ACE05_CHUNK)/%.comm
+	mkdir -p $(ACE05_JSON_NG14)
 	$(JAVAPA) $(JAVAFLAGS) edu.jhu.nlp.data.simple.CorpusConverter \
 		--train $< \
 		--trainGoldOut $@ \
 		--trainType CONCRETE \
-		--trainTypeOut SIMPLE_TEXT \
+		--trainTypeOut JSON \
 		--makeRelSingletons true \
 		--shuffle false \
 		--mungeRelations true \
@@ -139,13 +139,13 @@ $(ACE05_TXT_NG14)/%.txt : $(ACE05_CHUNK)/%.comm
 		--removeEntityTypes true \
 		--useRelationSubtype false
 
-$(ACE05_TXT_PM13)/%.txt : $(ACE05_CHUNK)/%.comm
-	mkdir -p $(ACE05_TXT_PM13)
+$(ACE05_JSON_PM13)/%.json : $(ACE05_CHUNK)/%.comm
+	mkdir -p $(ACE05_JSON_PM13)
 	$(JAVAPA) $(JAVAFLAGS) edu.jhu.nlp.data.simple.CorpusConverter \
 		--train $< \
 		--trainGoldOut $@ \
 		--trainType CONCRETE \
-		--trainTypeOut SIMPLE_TEXT \
+		--trainTypeOut JSON \
 		--makeRelSingletons true \
 		--shuffle false \
 		--mungeRelations true \
@@ -154,13 +154,13 @@ $(ACE05_TXT_PM13)/%.txt : $(ACE05_CHUNK)/%.comm
 		--removeEntityTypes true \
 		--useRelationSubtype false
 
-$(ACE05_TXT_YGD15_R11)/%.txt : $(ACE05_CHUNK)/%.comm
-	mkdir -p $(ACE05_TXT_YGD15_R11)
+$(ACE05_JSON_YGD15_R11)/%.json : $(ACE05_CHUNK)/%.comm
+	mkdir -p $(ACE05_JSON_YGD15_R11)
 	$(JAVAPA) $(JAVAFLAGS) edu.jhu.nlp.data.simple.CorpusConverter \
 		--train $< \
 		--trainGoldOut $@ \
 		--trainType CONCRETE \
-		--trainTypeOut SIMPLE_TEXT \
+		--trainTypeOut JSON \
 		--makeRelSingletons true \
 		--shuffle false \
 		--mungeRelations true \
@@ -169,13 +169,13 @@ $(ACE05_TXT_YGD15_R11)/%.txt : $(ACE05_CHUNK)/%.comm
 		--removeEntityTypes false \
 		--useRelationSubtype false
 
-$(ACE05_TXT_YGD15_R32)/%.txt : $(ACE05_CHUNK)/%.comm
-	mkdir -p $(ACE05_TXT_YGD15_R32)
+$(ACE05_JSON_YGD15_R32)/%.json : $(ACE05_CHUNK)/%.comm
+	mkdir -p $(ACE05_JSON_YGD15_R32)
 	$(JAVAPA) $(JAVAFLAGS) edu.jhu.nlp.data.simple.CorpusConverter \
 		--train $< \
 		--trainGoldOut $@ \
 		--trainType CONCRETE \
-		--trainTypeOut SIMPLE_TEXT \
+		--trainTypeOut JSON \
 		--makeRelSingletons true \
 		--shuffle false \
 		--mungeRelations true \
@@ -192,42 +192,42 @@ ace05comms: $(addprefix $(ACE05_COMMS)/,$(subst .apf.xml,.comm,$(APF_XML_FILES))
 .PHONY: ace05anno
 ace05anno: $(addprefix $(ACE05_CHUNK)/,$(subst .apf.xml,.comm,$(APF_XML_FILES)))
 
-.PHONY: ace05txt-ng14
-ace05txt-ng14: $(addprefix $(ACE05_TXT_NG14)/,$(subst .apf.xml,.txt,$(APF_XML_FILES)))
+.PHONY: ace05json-ng14
+ace05json-ng14: $(addprefix $(ACE05_JSON_NG14)/,$(subst .apf.xml,.json,$(APF_XML_FILES)))
 
-.PHONY: ace05txt-pm13
-ace05txt-pm13: $(addprefix $(ACE05_TXT_PM13)/,$(subst .apf.xml,.txt,$(APF_XML_FILES)))
+.PHONY: ace05json-pm13
+ace05json-pm13: $(addprefix $(ACE05_JSON_PM13)/,$(subst .apf.xml,.json,$(APF_XML_FILES)))
 
-.PHONY: ace05txt-ygd15-r11
-ace05txt-ygd15-r11: $(addprefix $(ACE05_TXT_YGD15_R11)/,$(subst .apf.xml,.txt,$(APF_XML_FILES)))
+.PHONY: ace05json-ygd15-r11
+ace05json-ygd15-r11: $(addprefix $(ACE05_JSON_YGD15_R11)/,$(subst .apf.xml,.json,$(APF_XML_FILES)))
 
-.PHONY: ace05txt-ygd15-r32
-ace05txt-ygd15-r32: $(addprefix $(ACE05_TXT_YGD15_R32)/,$(subst .apf.xml,.txt,$(APF_XML_FILES)))
+.PHONY: ace05json-ygd15-r32
+ace05json-ygd15-r32: $(addprefix $(ACE05_JSON_YGD15_R32)/,$(subst .apf.xml,.json,$(APF_XML_FILES)))
 
 # Split the annotated ACE Concrete files into domains.
 .PHONY: ace05splits
-ace05splits: $(LDC2006T06) ace05anno ace05txt-ng14 ace05txt-pm13 ace05txt-ygd15-r11 ace05txt-ygd15-r32
+ace05splits: $(LDC2006T06) ace05anno ace05json-ng14 ace05json-pm13 ace05json-ygd15-r11 ace05json-ygd15-r32
 	bash ./scripts/data/split_ace_dir.sh $(LDC2006T06) $(ACE05_CHUNK) $(ACE05_SPLITS)/comms comm
-	bash ./scripts/data/split_ace_dir.sh $(LDC2006T06) $(ACE05_TXT_NG14) $(ACE05_SPLITS)/txts-ng14 txt
-	bash ./scripts/data/split_ace_dir.sh $(LDC2006T06) $(ACE05_TXT_PM13) $(ACE05_SPLITS)/txts-pm13 txt
-	bash ./scripts/data/split_ace_dir.sh $(LDC2006T06) $(ACE05_TXT_YGD15_R11) $(ACE05_SPLITS)/txts-ygd15-r11 txt
-	bash ./scripts/data/split_ace_dir.sh $(LDC2006T06) $(ACE05_TXT_YGD15_R32) $(ACE05_SPLITS)/txts-ygd15-r32 txt
+	bash ./scripts/data/split_ace_dir.sh $(LDC2006T06) $(ACE05_JSON_NG14) $(ACE05_SPLITS)/jsons-ng14 json
+	bash ./scripts/data/split_ace_dir.sh $(LDC2006T06) $(ACE05_JSON_PM13) $(ACE05_SPLITS)/jsons-pm13 json
+	bash ./scripts/data/split_ace_dir.sh $(LDC2006T06) $(ACE05_JSON_YGD15_R11) $(ACE05_SPLITS)/jsons-ygd15-r11 json
+	bash ./scripts/data/split_ace_dir.sh $(LDC2006T06) $(ACE05_JSON_YGD15_R32) $(ACE05_SPLITS)/jsons-ygd15-r32 json
 
 # Count the number of training instances and relation labels.
 .PHONY: ace05counts
 ace05counts: #ace05splits
-	cat $(ACE05_SPLITS)/txts-ng14/bn+nw/*.txt | grep relLabels: | wc -l
-	cat $(ACE05_SPLITS)/txts-ng14/bn+nw/*.txt | grep relLabels: | sort | uniq | wc -l
-	cat $(ACE05_SPLITS)/txts-ng14/bn+nw/*.txt | grep nePairs: | perl -pe "s/, Fancy/\nFancy/g" | perl -pe "s/.*entityType=(\S+), entitySubType=(\S+),.*/\1 \2/g" | sort | uniq | wc -l
-	cat $(ACE05_SPLITS)/txts-pm13/bn+nw/*.txt | grep relLabels: | wc -l
-	cat $(ACE05_SPLITS)/txts-pm13/bn+nw/*.txt | grep relLabels: | sort | uniq | wc -l
-	cat $(ACE05_SPLITS)/txts-pm13/bn+nw/*.txt | grep nePairs: | perl -pe "s/, Fancy/\nFancy/g" | perl -pe "s/.*entityType=(\S+), entitySubType=(\S+),.*/\1 \2/g" | sort | uniq | wc -l
-	cat $(ACE05_SPLITS)/txts-ygd15-r11/bn+nw/*.txt | grep relLabels: | wc -l
-	cat $(ACE05_SPLITS)/txts-ygd15-r11/bn+nw/*.txt | grep relLabels: | sort | uniq | wc -l
-	cat $(ACE05_SPLITS)/txts-ygd15-r11/bn+nw/*.txt | grep nePairs: | perl -pe "s/, Fancy/\nFancy/g" | perl -pe "s/.*entityType=(\S+), entitySubType=(\S+),.*/\1 \2/g" | sort | uniq | wc -l
-	cat $(ACE05_SPLITS)/txts-ygd15-r32/bn+nw/*.txt | grep relLabels: | wc -l
-	cat $(ACE05_SPLITS)/txts-ygd15-r32/bn+nw/*.txt | grep relLabels: | sort | uniq | wc -l
-	cat $(ACE05_SPLITS)/txts-ygd15-r32/bn+nw/*.txt | grep nePairs: | perl -pe "s/, Fancy/\nFancy/g" | perl -pe "s/.*entityType=(\S+), entitySubType=(\S+),.*/\1 \2/g" | sort | uniq | wc -l
+	cat $(ACE05_SPLITS)/jsons-ng14/bn+nw/*.json | grep relLabels: | wc -l
+	cat $(ACE05_SPLITS)/jsons-ng14/bn+nw/*.json | grep relLabels: | sort | uniq | wc -l
+	cat $(ACE05_SPLITS)/jsons-ng14/bn+nw/*.json | grep nePairs: | perl -pe "s/, Fancy/\nFancy/g" | perl -pe "s/.*entityType=(\S+), entitySubType=(\S+),.*/\1 \2/g" | sort | uniq | wc -l
+	cat $(ACE05_SPLITS)/jsons-pm13/bn+nw/*.json | grep relLabels: | wc -l
+	cat $(ACE05_SPLITS)/jsons-pm13/bn+nw/*.json | grep relLabels: | sort | uniq | wc -l
+	cat $(ACE05_SPLITS)/jsons-pm13/bn+nw/*.json | grep nePairs: | perl -pe "s/, Fancy/\nFancy/g" | perl -pe "s/.*entityType=(\S+), entitySubType=(\S+),.*/\1 \2/g" | sort | uniq | wc -l
+	cat $(ACE05_SPLITS)/jsons-ygd15-r11/bn+nw/*.json | grep relLabels: | wc -l
+	cat $(ACE05_SPLITS)/jsons-ygd15-r11/bn+nw/*.json | grep relLabels: | sort | uniq | wc -l
+	cat $(ACE05_SPLITS)/jsons-ygd15-r11/bn+nw/*.json | grep nePairs: | perl -pe "s/, Fancy/\nFancy/g" | perl -pe "s/.*entityType=(\S+), entitySubType=(\S+),.*/\1 \2/g" | sort | uniq | wc -l
+	cat $(ACE05_SPLITS)/jsons-ygd15-r32/bn+nw/*.json | grep relLabels: | wc -l
+	cat $(ACE05_SPLITS)/jsons-ygd15-r32/bn+nw/*.json | grep relLabels: | sort | uniq | wc -l
+	cat $(ACE05_SPLITS)/jsons-ygd15-r32/bn+nw/*.json | grep nePairs: | perl -pe "s/, Fancy/\nFancy/g" | perl -pe "s/.*entityType=(\S+), entitySubType=(\S+),.*/\1 \2/g" | sort | uniq | wc -l
 # Don't delete intermediate files.
 .SECONDARY:
 
