@@ -6,7 +6,7 @@
 SHELL = /bin/bash
 JAVAIN = export CLASSPATH=`mvn -f ./scripts/maven/pom-acere.xml exec:exec -q -Dexec.executable="echo" -Dexec.args="%classpath"` && java
 JAVACS = export CLASSPATH=`mvn -f ./scripts/maven/pom-cs.xml exec:exec -q -Dexec.executable="echo" -Dexec.args="%classpath"` && java
-JAVAPA = java -cp /Users/mgormley/research/easy-pacaya/deps/pacaya-nlp/target/pacaya-nlp-3.1.2-SNAPSHOT-jar-with-dependencies.jar
+JAVAPA = export CLASSPATH=`mvn -f ./scripts/maven/pom-pacaya.xml exec:exec -q -Dexec.executable="echo" -Dexec.args="%classpath"` && java
 PYTHON = python
 JAVAFLAGS = -ea
 
@@ -216,18 +216,19 @@ ace05splits: $(LDC2006T06) ace05anno ace05json-ng14 ace05json-pm13 ace05json-ygd
 # Count the number of training instances and relation labels.
 .PHONY: ace05counts
 ace05counts: #ace05splits
-	cat $(ACE05_SPLITS)/jsons-ng14/bn+nw/*.json | grep relLabels: | wc -l
-	cat $(ACE05_SPLITS)/jsons-ng14/bn+nw/*.json | grep relLabels: | sort | uniq | wc -l
-	cat $(ACE05_SPLITS)/jsons-ng14/bn+nw/*.json | grep nePairs: | perl -pe "s/, Fancy/\nFancy/g" | perl -pe "s/.*entityType=(\S+), entitySubType=(\S+),.*/\1 \2/g" | sort | uniq | wc -l
-	cat $(ACE05_SPLITS)/jsons-pm13/bn+nw/*.json | grep relLabels: | wc -l
-	cat $(ACE05_SPLITS)/jsons-pm13/bn+nw/*.json | grep relLabels: | sort | uniq | wc -l
-	cat $(ACE05_SPLITS)/jsons-pm13/bn+nw/*.json | grep nePairs: | perl -pe "s/, Fancy/\nFancy/g" | perl -pe "s/.*entityType=(\S+), entitySubType=(\S+),.*/\1 \2/g" | sort | uniq | wc -l
-	cat $(ACE05_SPLITS)/jsons-ygd15-r11/bn+nw/*.json | grep relLabels: | wc -l
-	cat $(ACE05_SPLITS)/jsons-ygd15-r11/bn+nw/*.json | grep relLabels: | sort | uniq | wc -l
-	cat $(ACE05_SPLITS)/jsons-ygd15-r11/bn+nw/*.json | grep nePairs: | perl -pe "s/, Fancy/\nFancy/g" | perl -pe "s/.*entityType=(\S+), entitySubType=(\S+),.*/\1 \2/g" | sort | uniq | wc -l
-	cat $(ACE05_SPLITS)/jsons-ygd15-r32/bn+nw/*.json | grep relLabels: | wc -l
-	cat $(ACE05_SPLITS)/jsons-ygd15-r32/bn+nw/*.json | grep relLabels: | sort | uniq | wc -l
-	cat $(ACE05_SPLITS)/jsons-ygd15-r32/bn+nw/*.json | grep nePairs: | perl -pe "s/, Fancy/\nFancy/g" | perl -pe "s/.*entityType=(\S+), entitySubType=(\S+),.*/\1 \2/g" | sort | uniq | wc -l
+	cat $(ACE05_SPLITS)/jsons-ng14/bn+nw/*.json | grep relLabels | wc -l
+	cat $(ACE05_SPLITS)/jsons-ng14/bn+nw/*.json | grep relLabels | sort | uniq | wc -l
+	cat $(ACE05_SPLITS)/jsons-ng14/bn+nw/*.json | grep nePairs | perl -pe "s/, Fancy/\nFancy/g" | perl -pe "s/.*entityType=(\S+), entitySubType=(\S+),.*/\1 \2/g" | sort | uniq | wc -l
+	cat $(ACE05_SPLITS)/jsons-pm13/bn+nw/*.json | grep relLabels | wc -l
+	cat $(ACE05_SPLITS)/jsons-pm13/bn+nw/*.json | grep relLabels | sort | uniq | wc -l
+	cat $(ACE05_SPLITS)/jsons-pm13/bn+nw/*.json | grep nePairs | perl -pe "s/, Fancy/\nFancy/g" | perl -pe "s/.*entityType=(\S+), entitySubType=(\S+),.*/\1 \2/g" | sort | uniq | wc -l
+	cat $(ACE05_SPLITS)/jsons-ygd15-r11/bn+nw/*.json | grep relLabels | wc -l
+	cat $(ACE05_SPLITS)/jsons-ygd15-r11/bn+nw/*.json | grep relLabels | sort | uniq | wc -l
+	cat $(ACE05_SPLITS)/jsons-ygd15-r11/bn+nw/*.json | grep nePairs | perl -pe "s/, Fancy/\nFancy/g" | perl -pe "s/.*entityType=(\S+), entitySubType=(\S+),.*/\1 \2/g" | sort | uniq | wc -l
+	cat $(ACE05_SPLITS)/jsons-ygd15-r32/bn+nw/*.json | grep relLabels | wc -l
+	cat $(ACE05_SPLITS)/jsons-ygd15-r32/bn+nw/*.json | grep relLabels | sort | uniq | wc -l
+	cat $(ACE05_SPLITS)/jsons-ygd15-r32/bn+nw/*.json | grep nePairs | perl -pe "s/, Fancy/\nFancy/g" | perl -pe "s/.*entityType=(\S+), entitySubType=(\S+),.*/\1 \2/g" | sort | uniq | wc -l
+
 # Don't delete intermediate files.
 .SECONDARY:
 
