@@ -114,22 +114,3 @@ FileNotFound exception.
     cp LDC2006T06/dtd/*.dtd ./
     java -ea edu.jhu.re.AceApf2Concrete APW_ENG_20030322.0119.apf.xml APW_ENG_20030322.0119.comm
     
-
-## Convert SemEval-2010 Task 8 data to Concrete
-
-Currently, the Makefile is only able to add annotations to the
-SemEval-2010 Task 8 data, given Concrete files as input.
-First, you must install the latest version of concrete-python and
-clone the concrete-chunklink repository.
-
-    pip install concrete
-    git clone https://github.com/mgormley/concrete-chunklink.git
-
-Then run the following to add annotations:
-
-    make SE_COMMS=<path to SemEval Concrete dir> \
-         SE_OUT_DIR=<path for output dir> \
-         CONCRETE_CHUNKLINK=./concrete-chunklink \
-         semevalanno
-
-
