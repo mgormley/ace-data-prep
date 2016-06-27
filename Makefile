@@ -76,19 +76,19 @@ $(CONCRETE_CHUNKLINK):
 # ----------------------------------------------------------------
 
 .PHONY: semevalanno
-semevalanno: $(addprefix $(SE_CHUNK)/,$(notdir $(wildcard $(SE_COMMS)/*.comm)))
-# $(SE_CHUNK)/SemEval.test.ner.comm $(SE_CHUNK)/SemEval.test.sst.comm $(SE_CHUNK)/SemEval.train.ner.comm $(SE_CHUNK)/SemEval.train.sst.comm
+semevalanno: $(addprefix $(SE_CHUNK)/,$(notdir $(wildcard $(SE_COMMS)/*.concrete)))
+# $(SE_CHUNK)/SemEval.test.ner.concrete $(SE_CHUNK)/SemEval.test.sst.concrete $(SE_CHUNK)/SemEval.train.ner.concrete $(SE_CHUNK)/SemEval.train.sst.concrete
 
 # Converts the parses from concrete-stanford to chunks with concrete-chunklink.
-$(SE_CHUNK)/%.comm : $(SE_ANNO)/%.comm $(CONCRETE_CHUNKLINK)
+$(SE_CHUNK)/%.concrete : $(SE_ANNO)/%.concrete $(CONCRETE_CHUNKLINK)
 	mkdir -p $(SE_CHUNK)
 	$(PYTHON) $(CONCRETE_CHUNKLINK)/concrete_chunklink/add_chunks.py --chunklink $(CONCRETE_CHUNKLINK)/scripts/chunklink_2-2-2000_for_conll.pl $< $@
 
 # Annotates the SemEval data with concrete-stanford.
-$(SE_ANNO)/%.comm : $(SE_COMMS)/%.comm
+$(SE_ANNO)/%.concrete : $(SE_COMMS)/%.concrete
 	mkdir -p $(SE_ANNO)
-	$(JAVACS) $(JAVAFLAGS) edu.jhu.hlt.concrete.stanford.TextSpanMaker $< $@.tmp.comm
-	$(JAVACS) $(JAVAFLAGS) edu.jhu.hlt.concrete.stanford.AnnotateTokenizedConcrete $@.tmp.comm $@
+	$(JAVACS) $(JAVAFLAGS) edu.jhu.hlt.concrete.stanford.TextSpanMaker $< $@.tmp.concrete
+	$(JAVACS) $(JAVAFLAGS) edu.jhu.hlt.concrete.stanford.AnnotateTokenizedConcrete $@.tmp.concrete $@
 
 # ----------------------------------------------------------------
 # ACE 2005 Data
@@ -110,21 +110,21 @@ $(LDC2006T06_EN_SYM)/%.apf.xml: $(LDC2006T06_EN)/*/adj/%.apf.xml $(LDC2006T06_EN
 	ln -s $^ $(dir $@) || true
 
 # Converts the ACE 2005 data to Concrete Communications.
-$(ACE05_COMMS)/%.comm: $(LDC2006T06_EN_SYM)/%.apf.xml $(LDC2006T06_EN_SYM)/apf.v5.1.1.dtd
+$(ACE05_COMMS)/%.concrete: $(LDC2006T06_EN_SYM)/%.apf.xml $(LDC2006T06_EN_SYM)/apf.v5.1.1.dtd
 	mkdir -p $(ACE05_COMMS)
 	$(JAVAIN) $(JAVAFLAGS) edu.jhu.hlt.concrete.ingesters.acere.AceApf2Concrete $< $@ 
 
 # Annotates the ACE Communications with concrete-stanford.
-$(ACE05_ANNO)/%.comm : $(ACE05_COMMS)/%.comm
+$(ACE05_ANNO)/%.concrete : $(ACE05_COMMS)/%.concrete
 	mkdir -p $(ACE05_ANNO)
 	$(JAVACS) $(JAVAFLAGS) edu.jhu.hlt.concrete.stanford.AnnotateTokenizedConcrete $< $@
 
 # Converts the parses from concrete-stanford to chunks with concrete-chunklink.
-$(ACE05_CHUNK)/%.comm : $(ACE05_ANNO)/%.comm $(CONCRETE_CHUNKLINK)
+$(ACE05_CHUNK)/%.concrete : $(ACE05_ANNO)/%.concrete $(CONCRETE_CHUNKLINK)
 	mkdir -p $(ACE05_CHUNK)
 	$(PYTHON) $(CONCRETE_CHUNKLINK)/concrete_chunklink/add_chunks.py --chunklink $(CONCRETE_CHUNKLINK)/scripts/chunklink_2-2-2000_for_conll.pl $< $@
 
-$(ACE05_JSON_NG14)/%.json : $(ACE05_CHUNK)/%.comm
+$(ACE05_JSON_NG14)/%.json : $(ACE05_CHUNK)/%.concrete
 	mkdir -p $(ACE05_JSON_NG14)
 	$(JAVAPA) $(JAVAFLAGS) edu.jhu.nlp.data.simple.CorpusConverter \
 		--train $< \
@@ -139,7 +139,7 @@ $(ACE05_JSON_NG14)/%.json : $(ACE05_CHUNK)/%.comm
 		--removeEntityTypes true \
 		--useRelationSubtype false
 
-$(ACE05_JSON_PM13)/%.json : $(ACE05_CHUNK)/%.comm
+$(ACE05_JSON_PM13)/%.json : $(ACE05_CHUNK)/%.concrete
 	mkdir -p $(ACE05_JSON_PM13)
 	$(JAVAPA) $(JAVAFLAGS) edu.jhu.nlp.data.simple.CorpusConverter \
 		--train $< \
@@ -154,7 +154,7 @@ $(ACE05_JSON_PM13)/%.json : $(ACE05_CHUNK)/%.comm
 		--removeEntityTypes true \
 		--useRelationSubtype false
 
-$(ACE05_JSON_YGD15_R11)/%.json : $(ACE05_CHUNK)/%.comm
+$(ACE05_JSON_YGD15_R11)/%.json : $(ACE05_CHUNK)/%.concrete
 	mkdir -p $(ACE05_JSON_YGD15_R11)
 	$(JAVAPA) $(JAVAFLAGS) edu.jhu.nlp.data.simple.CorpusConverter \
 		--train $< \
@@ -169,7 +169,7 @@ $(ACE05_JSON_YGD15_R11)/%.json : $(ACE05_CHUNK)/%.comm
 		--removeEntityTypes false \
 		--useRelationSubtype false
 
-$(ACE05_JSON_YGD15_R32)/%.json : $(ACE05_CHUNK)/%.comm
+$(ACE05_JSON_YGD15_R32)/%.json : $(ACE05_CHUNK)/%.concrete
 	mkdir -p $(ACE05_JSON_YGD15_R32)
 	$(JAVAPA) $(JAVAFLAGS) edu.jhu.nlp.data.simple.CorpusConverter \
 		--train $< \
@@ -186,11 +186,11 @@ $(ACE05_JSON_YGD15_R32)/%.json : $(ACE05_CHUNK)/%.comm
 
 # Converts all the ACE 2005 data to Concrete Communications.
 .PHONY: ace05comms
-ace05comms: $(addprefix $(ACE05_COMMS)/,$(subst .apf.xml,.comm,$(APF_XML_FILES)))
+ace05comms: $(addprefix $(ACE05_COMMS)/,$(subst .apf.xml,.concrete,$(APF_XML_FILES)))
 
 # Annotates all of the ACE 2005 data with Stanford tools and chunklink.pl.
 .PHONY: ace05anno
-ace05anno: $(addprefix $(ACE05_CHUNK)/,$(subst .apf.xml,.comm,$(APF_XML_FILES)))
+ace05anno: $(addprefix $(ACE05_CHUNK)/,$(subst .apf.xml,.concrete,$(APF_XML_FILES)))
 
 .PHONY: ace05json-ng14
 ace05json-ng14: $(addprefix $(ACE05_JSON_NG14)/,$(subst .apf.xml,.json,$(APF_XML_FILES)))
@@ -208,26 +208,26 @@ ace05json-ygd15-r32: $(addprefix $(ACE05_JSON_YGD15_R32)/,$(subst .apf.xml,.json
 .PHONY: ace05splits
 ace05splits: $(LDC2006T06) ace05anno ace05json-ng14 ace05json-pm13 ace05json-ygd15-r11 ace05json-ygd15-r32
 	bash ./scripts/data/split_ace_dir.sh $(LDC2006T06) $(ACE05_CHUNK) $(ACE05_SPLITS)/comms comm
-	bash ./scripts/data/split_ace_dir.sh $(LDC2006T06) $(ACE05_JSON_NG14) $(ACE05_SPLITS)/jsons-ng14 json
-	bash ./scripts/data/split_ace_dir.sh $(LDC2006T06) $(ACE05_JSON_PM13) $(ACE05_SPLITS)/jsons-pm13 json
-	bash ./scripts/data/split_ace_dir.sh $(LDC2006T06) $(ACE05_JSON_YGD15_R11) $(ACE05_SPLITS)/jsons-ygd15-r11 json
-	bash ./scripts/data/split_ace_dir.sh $(LDC2006T06) $(ACE05_JSON_YGD15_R32) $(ACE05_SPLITS)/jsons-ygd15-r32 json
+	bash ./scripts/data/split_ace_dir.sh $(LDC2006T06) $(ACE05_JSON_NG14) $(ACE05_SPLITS)/json-ng14 json
+	bash ./scripts/data/split_ace_dir.sh $(LDC2006T06) $(ACE05_JSON_PM13) $(ACE05_SPLITS)/json-pm13 json
+	bash ./scripts/data/split_ace_dir.sh $(LDC2006T06) $(ACE05_JSON_YGD15_R11) $(ACE05_SPLITS)/json-ygd15-r11 json
+	bash ./scripts/data/split_ace_dir.sh $(LDC2006T06) $(ACE05_JSON_YGD15_R32) $(ACE05_SPLITS)/json-ygd15-r32 json
 
 # Count the number of training instances and relation labels.
 .PHONY: ace05counts
 ace05counts: #ace05splits
-	cat $(ACE05_SPLITS)/jsons-ng14/bn+nw/*.json | grep relLabels | wc -l
-	cat $(ACE05_SPLITS)/jsons-ng14/bn+nw/*.json | grep relLabels | sort | uniq | wc -l
-	cat $(ACE05_SPLITS)/jsons-ng14/bn+nw/*.json | grep nePairs | perl -pe "s/, Fancy/\nFancy/g" | perl -pe "s/.*entityType=(\S+), entitySubType=(\S+),.*/\1 \2/g" | sort | uniq | wc -l
-	cat $(ACE05_SPLITS)/jsons-pm13/bn+nw/*.json | grep relLabels | wc -l
-	cat $(ACE05_SPLITS)/jsons-pm13/bn+nw/*.json | grep relLabels | sort | uniq | wc -l
-	cat $(ACE05_SPLITS)/jsons-pm13/bn+nw/*.json | grep nePairs | perl -pe "s/, Fancy/\nFancy/g" | perl -pe "s/.*entityType=(\S+), entitySubType=(\S+),.*/\1 \2/g" | sort | uniq | wc -l
-	cat $(ACE05_SPLITS)/jsons-ygd15-r11/bn+nw/*.json | grep relLabels | wc -l
-	cat $(ACE05_SPLITS)/jsons-ygd15-r11/bn+nw/*.json | grep relLabels | sort | uniq | wc -l
-	cat $(ACE05_SPLITS)/jsons-ygd15-r11/bn+nw/*.json | grep nePairs | perl -pe "s/, Fancy/\nFancy/g" | perl -pe "s/.*entityType=(\S+), entitySubType=(\S+),.*/\1 \2/g" | sort | uniq | wc -l
-	cat $(ACE05_SPLITS)/jsons-ygd15-r32/bn+nw/*.json | grep relLabels | wc -l
-	cat $(ACE05_SPLITS)/jsons-ygd15-r32/bn+nw/*.json | grep relLabels | sort | uniq | wc -l
-	cat $(ACE05_SPLITS)/jsons-ygd15-r32/bn+nw/*.json | grep nePairs | perl -pe "s/, Fancy/\nFancy/g" | perl -pe "s/.*entityType=(\S+), entitySubType=(\S+),.*/\1 \2/g" | sort | uniq | wc -l
+	cat $(ACE05_SPLITS)/json-ng14/bn+nw/*.json | grep relLabels | wc -l
+	cat $(ACE05_SPLITS)/json-ng14/bn+nw/*.json | grep relLabels | sort | uniq | wc -l
+	cat $(ACE05_SPLITS)/json-ng14/bn+nw/*.json | grep nePairs | perl -pe "s/, Fancy/\nFancy/g" | perl -pe "s/.*entityType=(\S+), entitySubType=(\S+),.*/\1 \2/g" | sort | uniq | wc -l
+	cat $(ACE05_SPLITS)/json-pm13/bn+nw/*.json | grep relLabels | wc -l
+	cat $(ACE05_SPLITS)/json-pm13/bn+nw/*.json | grep relLabels | sort | uniq | wc -l
+	cat $(ACE05_SPLITS)/json-pm13/bn+nw/*.json | grep nePairs | perl -pe "s/, Fancy/\nFancy/g" | perl -pe "s/.*entityType=(\S+), entitySubType=(\S+),.*/\1 \2/g" | sort | uniq | wc -l
+	cat $(ACE05_SPLITS)/json-ygd15-r11/bn+nw/*.json | grep relLabels | wc -l
+	cat $(ACE05_SPLITS)/json-ygd15-r11/bn+nw/*.json | grep relLabels | sort | uniq | wc -l
+	cat $(ACE05_SPLITS)/json-ygd15-r11/bn+nw/*.json | grep nePairs | perl -pe "s/, Fancy/\nFancy/g" | perl -pe "s/.*entityType=(\S+), entitySubType=(\S+),.*/\1 \2/g" | sort | uniq | wc -l
+	cat $(ACE05_SPLITS)/json-ygd15-r32/bn+nw/*.json | grep relLabels | wc -l
+	cat $(ACE05_SPLITS)/json-ygd15-r32/bn+nw/*.json | grep relLabels | sort | uniq | wc -l
+	cat $(ACE05_SPLITS)/json-ygd15-r32/bn+nw/*.json | grep nePairs | perl -pe "s/, Fancy/\nFancy/g" | perl -pe "s/.*entityType=(\S+), entitySubType=(\S+),.*/\1 \2/g" | sort | uniq | wc -l
 
 # Don't delete intermediate files.
 .SECONDARY:
