@@ -15,11 +15,11 @@ CONCRETE_CHUNKLINK=./concrete-chunklink
 # Machine specific parameters.
 ifeq ($(MACHINE),COE)
 LDC_DIR=/export/common/data/corpora/LDC
-OUT_DIR=~/corpora/processed/ace_05_concrete4.3
+OUT_DIR=~/corpora/processed/ace_05_concrete4.8
 JAVAFLAGS = -ea -Xmx10000m -XX:-UseParallelGC -XX:-UseParNewGC -XX:+UseSerialGC
 else ifeq ($(MACHINE),LOCAL)
 LDC_DIR=/Users/mgormley/research/LDC
-OUT_DIR=/Users/mgormley/research/corpora/processed/ace_05_concrete4.3
+OUT_DIR=/Users/mgormley/research/corpora/processed/ace_05_concrete4.8
 JAVAFLAGS = -ea
 else
 JAVAFLAGS = -ea

@@ -81,26 +81,18 @@ subdirectories.
 
 ### Convert and Annotate Full Dataset
 
-A Makefile is included to convert the full ACE 2005 dataset to
-Concrete. To do so, run the following:
-
-    make LDC2006T06=<path to LDC dir> ACE_OUT_DIR=<path for output dir> ace05comms
-
-The same Makefile will also add Stanford CoreNLP annotations
+A Makefile is included to  to convert the full ACE 2005 dataset to
+Concrete. The same Makefile will also add Stanford CoreNLP annotations
 and convert the constituency trees to chunks with chunklink.pl. 
-First, you must install the latest version of concrete-python and
-clone the concrete-chunklink repository.
+It will also require install the latest version of concrete-python and
+clone the concrete-chunklink repository. 
 
-    pip install concrete
-    git clone https://github.com/mgormley/concrete-chunklink.git
-
-Then run the make command below. It will convert the data to Concrete
+The command below will convert the data to Concrete
 (with AceApf2Concrete), annotate (with Stanford and chunklink.pl), and
 split the data back into domains (with split_ace_dir.sh).
 
-    make LDC2006T06=<path to LDC dir> \
-         ACE_OUT_DIR=<path for output dir> \
-         CONCRETE_CHUNKLINK=./concrete-chunklink \
+    make LDC_DIR=<path to LDC dir> \
+         OUT_DIR=<path for output dir> \
          ace05splits
 
 ### Convert a Single File to Concrete

@@ -51,7 +51,11 @@ do
     # in to the DOMDIR.
     cat $FILELIST | awk "\$0=\"${COMMS_DIR}/\"\$0\".${SUFFIX}\"" | xargs -n 1 -I % cp % $DOMDIR/
     ls $DOMDIR | wc -l
+    if [[ $SUFFIX = "json" ]]; then
+        cat $DOMDIR/*.$SUFFIX > $OUT_DIR/$FILESET.json
+    fi
 done
 
 wc -l $OUT_DIR/*.files
+
 
