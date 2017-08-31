@@ -65,9 +65,13 @@ anno: ace05splits semevalanno
 # ----------------------------------------------------------------
 # Install (clone) concrete-chunklink from GitHub
 # ----------------------------------------------------------------
+setup: $(CONCRETE_CHUNKLINK)
+	$(JAVAIN) -version
+	$(JAVACS) -version
+	$(JAVAPA) -version
 
 $(CONCRETE_CHUNKLINK):
-	pip install 'concrete>=4.4.0,<4.8.0'
+	pip install --user 'concrete>=4.4.0,<4.8.0'
 	git clone https://github.com/mgormley/concrete-chunklink.git $(CONCRETE_CHUNKLINK)
 	cd $(CONCRETE_CHUNKLINK) && git checkout v0.2
 
