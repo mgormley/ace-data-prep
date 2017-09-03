@@ -1,7 +1,8 @@
 # Makefile for creating Concrete ACE 2005 and SemEval datasets with
 # annotations from Stanford and Chunklink.
 #
-
+# TODO: Change all concrete directories from "comms" to "concrete".
+#
 
 SHELL = /bin/bash
 JAVAIN = export CLASSPATH=`mvn -f ./scripts/maven/pom-acere.xml exec:exec -q -Dexec.executable="echo" -Dexec.args="%classpath"` && java
