@@ -66,9 +66,13 @@ anno: ace05splits semevalanno
 # ----------------------------------------------------------------
 # Install (clone) concrete-chunklink from GitHub
 # ----------------------------------------------------------------
+setup: $(CONCRETE_CHUNKLINK)
+	$(JAVAIN) -version
+	$(JAVACS) -version
+	$(JAVAPA) -version
 
 $(CONCRETE_CHUNKLINK):
-	pip install 'concrete>=4.4.0,<4.8.0'
+	pip install --user 'concrete>=4.4.0,<4.8.0'
 	git clone https://github.com/mgormley/concrete-chunklink.git $(CONCRETE_CHUNKLINK)
 	cd $(CONCRETE_CHUNKLINK) && git checkout v0.2
 
@@ -208,7 +212,7 @@ ace05json-ygd15-r32: $(addprefix $(ACE05_JSON_YGD15_R32)/,$(subst .apf.xml,.json
 # Split the annotated ACE Concrete files into domains.
 .PHONY: ace05splits
 ace05splits: $(LDC2006T06) ace05anno ace05json-ng14 ace05json-pm13 ace05json-ygd15-r11 ace05json-ygd15-r32
-	bash ./scripts/data/split_ace_dir.sh $(LDC2006T06) $(ACE05_CHUNK) $(ACE05_SPLITS)/comms comm
+	bash ./scripts/data/split_ace_dir.sh $(LDC2006T06) $(ACE05_CHUNK) $(ACE05_SPLITS)/comms concrete
 	bash ./scripts/data/split_ace_dir.sh $(LDC2006T06) $(ACE05_JSON_NG14) $(ACE05_SPLITS)/json-ng14 json
 	bash ./scripts/data/split_ace_dir.sh $(LDC2006T06) $(ACE05_JSON_PM13) $(ACE05_SPLITS)/json-pm13 json
 	bash ./scripts/data/split_ace_dir.sh $(LDC2006T06) $(ACE05_JSON_YGD15_R11) $(ACE05_SPLITS)/json-ygd15-r11 json
@@ -217,18 +221,18 @@ ace05splits: $(LDC2006T06) ace05anno ace05json-ng14 ace05json-pm13 ace05json-ygd
 # Count the number of training instances and relation labels.
 .PHONY: ace05counts
 ace05counts: #ace05splits
-	cat $(ACE05_SPLITS)/json-ng14/bn+nw/*.json | grep relLabels | wc -l
-	cat $(ACE05_SPLITS)/json-ng14/bn+nw/*.json | grep relLabels | sort | uniq | wc -l
-	cat $(ACE05_SPLITS)/json-ng14/bn+nw/*.json | grep nePairs | perl -pe "s/, Fancy/\nFancy/g" | perl -pe "s/.*entityType=(\S+), entitySubType=(\S+),.*/\1 \2/g" | sort | uniq | wc -l
-	cat $(ACE05_SPLITS)/json-pm13/bn+nw/*.json | grep relLabels | wc -l
-	cat $(ACE05_SPLITS)/json-pm13/bn+nw/*.json | grep relLabels | sort | uniq | wc -l
-	cat $(ACE05_SPLITS)/json-pm13/bn+nw/*.json | grep nePairs | perl -pe "s/, Fancy/\nFancy/g" | perl -pe "s/.*entityType=(\S+), entitySubType=(\S+),.*/\1 \2/g" | sort | uniq | wc -l
-	cat $(ACE05_SPLITS)/json-ygd15-r11/bn+nw/*.json | grep relLabels | wc -l
-	cat $(ACE05_SPLITS)/json-ygd15-r11/bn+nw/*.json | grep relLabels | sort | uniq | wc -l
-	cat $(ACE05_SPLITS)/json-ygd15-r11/bn+nw/*.json | grep nePairs | perl -pe "s/, Fancy/\nFancy/g" | perl -pe "s/.*entityType=(\S+), entitySubType=(\S+),.*/\1 \2/g" | sort | uniq | wc -l
-	cat $(ACE05_SPLITS)/json-ygd15-r32/bn+nw/*.json | grep relLabels | wc -l
-	cat $(ACE05_SPLITS)/json-ygd15-r32/bn+nw/*.json | grep relLabels | sort | uniq | wc -l
-	cat $(ACE05_SPLITS)/json-ygd15-r32/bn+nw/*.json | grep nePairs | perl -pe "s/, Fancy/\nFancy/g" | perl -pe "s/.*entityType=(\S+), entitySubType=(\S+),.*/\1 \2/g" | sort | uniq | wc -l
+	cat $(ACE05_SPLITS)/json-ng14/bn+nw.json.gz | gunzip | grep relLabels | wc -l
+	cat $(ACE05_SPLITS)/json-ng14/bn+nw.json.gz | gunzip | grep relLabels | sort | uniq | wc -l
+	cat $(ACE05_SPLITS)/json-ng14/bn+nw.json.gz | gunzip | grep nePairs | perl -pe "s/, Fancy/\nFancy/g" | perl -pe "s/.*entityType=(\S+), entitySubType=(\S+),.*/\1 \2/g" | sort | uniq | wc -l
+	cat $(ACE05_SPLITS)/json-pm13/bn+nw.json.gz | gunzip | grep relLabels | wc -l
+	cat $(ACE05_SPLITS)/json-pm13/bn+nw.json.gz | gunzip | grep relLabels | sort | uniq | wc -l
+	cat $(ACE05_SPLITS)/json-pm13/bn+nw.json.gz | gunzip | grep nePairs | perl -pe "s/, Fancy/\nFancy/g" | perl -pe "s/.*entityType=(\S+), entitySubType=(\S+),.*/\1 \2/g" | sort | uniq | wc -l
+	cat $(ACE05_SPLITS)/json-ygd15-r11/bn+nw.json.gz | gunzip | grep relLabels | wc -l
+	cat $(ACE05_SPLITS)/json-ygd15-r11/bn+nw.json.gz | gunzip | grep relLabels | sort | uniq | wc -l
+	cat $(ACE05_SPLITS)/json-ygd15-r11/bn+nw.json.gz | gunzip | grep nePairs | perl -pe "s/, Fancy/\nFancy/g" | perl -pe "s/.*entityType=(\S+), entitySubType=(\S+),.*/\1 \2/g" | sort | uniq | wc -l
+	cat $(ACE05_SPLITS)/json-ygd15-r32/bn+nw.json.gz | gunzip | grep relLabels | wc -l
+	cat $(ACE05_SPLITS)/json-ygd15-r32/bn+nw.json.gz | gunzip | grep relLabels | sort | uniq | wc -l
+	cat $(ACE05_SPLITS)/json-ygd15-r32/bn+nw.json.gz | gunzip | grep nePairs | perl -pe "s/, Fancy/\nFancy/g" | perl -pe "s/.*entityType=(\S+), entitySubType=(\S+),.*/\1 \2/g" | sort | uniq | wc -l
 
 # Don't delete intermediate files.
 .SECONDARY:
